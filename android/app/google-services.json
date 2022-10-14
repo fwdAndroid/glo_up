@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "681137216478",
+    "project_id": "glo-up-1233e",
+    "storage_bucket": "glo-up-1233e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:681137216478:android:ad3b3554b7c4f71f871b4f",
+        "android_client_info": {
+          "package_name": "com.example.glo_up"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "681137216478-7mhb3gdn6tmlunqkr5ktrntbmoe1q5rb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.glo_up",
+            "certificate_hash": "d83acc58cfa6b6d03a8bdaf196c47cf2317a297d"
+          }
+        },
+        {
+          "client_id": "681137216478-ejm5a49gj7dk5phc3i1uves06emppvru.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIPq-MFijnvz7iWXyK2CbwWaDmTS36jzw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "681137216478-ejm5a49gj7dk5phc3i1uves06emppvru.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
