@@ -362,7 +362,7 @@ class _ProfileState extends State<Profile> {
     String rse = await FirestoreMethods().uploadPosts(
         photoUrl: "",
         imageUrl: [],
-        likes: [],
+        interest: [],
         email: _emailController.text,
         firstName: _firstController.text,
         lastName: _lastController.text,

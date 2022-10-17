@@ -10,12 +10,12 @@ class ProfileModel {
   String phone;
   String occupy;
   List<String>? imageUrl;
-  List<String>? likes;
+  List<String>? interest;
   final age;
   ProfileModel(
       {required this.firstName,
       required this.profilePhotoURL,
-      required this.likes,
+      required this.interest,
       required this.uid,
       required this.lastName,
       required this.date,
@@ -28,7 +28,7 @@ class ProfileModel {
   ///Converting OBject into Json Object
   Map<String, dynamic> toJson() => {
         'email': email,
-        'likes': likes,
+        'interest': interest,
         'phone': phone,
         'uid': uid,
         'lastName': lastName,
@@ -45,7 +45,7 @@ class ProfileModel {
     var snapshot = snaps.data() as Map<String, dynamic>;
 
     return ProfileModel(
-        likes: snapshot['likes'],
+        interest: snapshot['interest'],
         phone: snapshot['phone'],
         uid: snapshot['uid'],
         lastName: snapshot['lastName'],

@@ -1,5 +1,6 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:glo_up/models/profilemodel.dart';
 
 class FirestoreMethods {
@@ -15,9 +16,9 @@ class FirestoreMethods {
     required String age,
     required String phone,
     required String date,
-    required List<String> likes,
-   required List<String> imageUrl,
-   required String photoUrl,
+    required List<String> interest,
+    required List<String> imageUrl,
+    required String photoUrl,
   }) async {
     String res = "Some Error";
     try {
@@ -26,7 +27,7 @@ class FirestoreMethods {
           firstName: firstName,
           uid: uid,
           imageUrl: imageUrl,
-          likes: likes,
+          interest: interest,
           lastName: lastName,
           email: email,
           date: date,
@@ -53,4 +54,27 @@ class FirestoreMethods {
       _firebaseFirestore.collection('posts').doc(postid).delete();
     } catch (e) {}
   }
+
+  Future<String> updateList({
+    required String key,
+    required List value,
+  }) async {
+    String res = 'Some error occured';
+    debugPrint(res);
+    try {
+      await FirebaseFirestore.instance
+          .collection('profile')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({
+        key: value,
+      });
+      res = 'success';
+      debugPrint(res);
+    } on FirebaseException catch (e) {
+      res = e.toString();
+      debugPrint(res);
+    }
+    return res;
+  }
 }
+
