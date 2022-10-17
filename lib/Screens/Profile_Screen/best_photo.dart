@@ -1,11 +1,12 @@
-import 'dart:typed_data';
+import 'dart:io';
 
-import 'package:dotted_border/dotted_border.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:glo_up/BottomNavigatonBar/bottomnavigation.dart';
 import 'package:glo_up/Screens/groupbutton/brand_select_screen.dart';
-import 'package:glo_up/utils/constant.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:path/path.dart' as Path;
 
 class Best_Photo extends StatefulWidget {
   const Best_Photo({Key? key}) : super(key: key);
@@ -15,202 +16,280 @@ class Best_Photo extends StatefulWidget {
 }
 
 class _Best_PhotoState extends State<Best_Photo> {
-  Uint8List? _image;
+  // var phoneNumberController = TextEditingController();
+  // var utils = AppUtils();
+  // List<bool> enabled = [false, false, false, false, false, false];
+
+  bool uploading = false;
+  double val = 0;
+  CollectionReference? imgRef;
+  firebase_storage.Reference? ref;
+
+  List<File> _image = [];
+  final picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text(
-          'Add Photos',
-          style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.w500, color: Colors.black),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () {},
-              child: Text(
-                "Skip",
-                style: TextStyle(color: Color(0xffD6D6D6), fontSize: 18),
-              ))
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: EdgeInsets.only(left: 10, right: 10),
-            child: Text(
-              'Add your best photos to get a higher amount of \ndaily matches.',
-              style: TextStyle(fontSize: 16),
-            ),
-          ),
-          SizedBox(height: 80),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                height: 200,
-                width: 160,
-                child: DottedBorder(
-                  color: Color(0xff0092E1),
-                  // borderType: BorderType.RRect,
-                  strokeWidth: 1,
-                  // dashPattern: [6, 3, 2, 3],
-                  borderType: BorderType.RRect,
-                  radius: Radius.circular(12),
-                  // padding: EdgeInsets.all(6),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    child: _image != null
-                        ? CircleAvatar(
-                            radius: 59, backgroundImage: MemoryImage(_image!))
-                        : Container(
-                            height: 300,
-                            width: 200,
-                            // color: Colors.pink.shade200,
-                            child: IconButton(
-                                onPressed: selectImage,
-                                icon: Icon(
-                                  Icons.add,
+              const SizedBox(
+                height: 100,
+              ),
+              Row(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.0625,
+                    height: 7,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey[200],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 45,
+              ),
+              // Text(
+              //   "Add your photos",
+              //   style: utils.largeHeadingTextStyle(
+              //     color: Colors.black,
+              //   ),
+              // ),
+              const SizedBox(
+                height: 20,
+              ),
+
+              const SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Wrap(
+                    children: [
+                      SizedBox(
+                        height: 350,
+                        width: MediaQuery.of(context).size.width,
+                        child: Stack(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(4),
+                              child: GridView.builder(
+                                  itemCount: _image.length + 1,
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3),
+                                  itemBuilder: (context, index) {
+                                    return index == 0
+                                        ? Center(
+                                            child: IconButton(
+                                                icon: Icon(Icons.add),
+                                                onPressed: () => !uploading
+                                                    ? chooseImage()
+                                                    : null),
+                                          )
+                                        : Container(
+                                            margin: EdgeInsets.all(3),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                image: DecorationImage(
+                                                    image: FileImage(
+                                                        _image[index - 1]),
+                                                    fit: BoxFit.cover)),
+                                          );
+                                  }),
+                            ),
+                            uploading
+                                ? Center(
+                                    child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        child: Text(
+                                          'uploading...',
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      CircularProgressIndicator(
+                                        value: val,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.green),
+                                      )
+                                    ],
+                                  ))
+                                : Container(),
+                          ],
+                        ),
+                      ),
+                      // for (int i = 0; i < 6; i++)
+                      //   utils.addPhotosWidget(
+                      //     onTap: () async {
+                      //       if (enabled[i] == true) {
+                      //         enabled[i] = false;
+                      //       } else {
+                      //         await Navigator.pushNamed(
+                      //             context, editPhotosScreenRoute);
+                      //         enabled[i] = true;
+                      //       }
+                      //       setState(() {});
+                      //     },
+                      //     enabled: enabled[i],
+                      //     width: width,
+                      //   ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: width > 415
+                    ? MediaQuery.of(context).size.height * 0.1
+                    : MediaQuery.of(context).size.height * 0.15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: const [
+                              Text(
+                                "Tip: ",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: "ProximaNova",
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              Text(
+                                "Try to show off your",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: "ProximaNova",
                                   color: Colors.black,
-                                ))),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Container(
-                height: 200,
-                width: 160,
-                child: DottedBorder(
-                  color: Color(0xff0092E1),
-                  // borderType: BorderType.RRect,
-                  strokeWidth: 1,
-                  // dashPattern: [6, 3, 2, 3],
-                  borderType: BorderType.RRect,
-                  radius: Radius.circular(12),
-                  // padding: EdgeInsets.all(6),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    child: Container(
-                        height: 300,
-                        width: 200,
-                        // color: Colors.pink.shade200,
-                        child: IconButton(
-                            onPressed: selectImage,
-                            icon: Icon(
-                              Icons.add,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Text(
+                            "personality in your photos.",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: "ProximaNova",
                               color: Colors.black,
-                            ))),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
+                  InkWell(
+                    onTap: () {
+                      // if (enabled[0] == true ||
+                      //     enabled[1] == true ||
+                      //     enabled[2] == true ||
+                      //     enabled[3] == true ||
+                      //     enabled[4] == true ||
+                      //     enabled[5] == true) {
+                      //   Navigator.pushNamed(
+                      //       context, onBoardingPhotoVerificationScreenRoute);
+                      // }
+                      if (_image.length >= 6) {
+                        setState(() {
+                          uploading = true;
+                        });
+                        uploadFile().whenComplete(() => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (builder) => BrandSelectScreen())));
+                      }
+                    },
+                    child: Text(
+                      "Select Us",
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 30,
               ),
             ],
           ),
-          SizedBox(
-            height: 15,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: 200,
-                width: 160,
-                child: DottedBorder(
-                  color: Color(0xff0092E1),
-                  // borderType: BorderType.RRect,
-                  strokeWidth: 1,
-                  // dashPattern: [6, 3, 2, 3],
-                  borderType: BorderType.RRect,
-                  radius: Radius.circular(12),
-                  // padding: EdgeInsets.all(6),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    child: Container(
-                        height: 300,
-                        width: 200,
-                        // color: Colors.pink.shade200,
-                        child: IconButton(
-                            onPressed: selectImage,
-                            icon: Icon(
-                              Icons.add,
-                              color: Colors.black,
-                            ))),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Container(
-                height: 200,
-                width: 160,
-                child: DottedBorder(
-                  color: Color(0xff0092E1),
-                  // borderType: BorderType.RRect,
-                  strokeWidth: 1,
-                  // dashPattern: [6, 3, 2, 3],
-                  borderType: BorderType.RRect,
-                  radius: Radius.circular(12),
-                  // padding: EdgeInsets.all(6),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    child: Container(
-                        height: 300,
-                        width: 200,
-                        // color: Colors.pink.shade200,
-                        child: IconButton(
-                            onPressed: selectImage,
-                            icon: Icon(
-                              Icons.add,
-                              color: Colors.black,
-                            ))),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          Spacer(),
-          Center(
-            child: Container(
-              margin: EdgeInsets.only(bottom: 20),
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (builder) => BrandSelectScreen()));
-                  },
-                  child: Text(
-                    'Continue',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(),
-                      primary: Color(0xfff0092E1),
-                      fixedSize: Size(300, 50))),
-            ),
-          ),
-
-          // SizedBox(height: 20)
-        ],
+        ),
       ),
     );
   }
 
-  selectImage() async {
-    Uint8List ui = await pickImage(ImageSource.gallery);
+  chooseImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     setState(() {
-      _image = ui;
+      _image.add(File(pickedFile!.path));
     });
+    if (pickedFile!.path == null) retrieveLostData();
+  }
+
+  Future<void> retrieveLostData() async {
+    final LostDataResponse response = await picker.retrieveLostData();
+    if (response.isEmpty) {
+      return;
+    }
+    if (response.file != null) {
+      setState(() {
+        _image.add(File(response.file!.path));
+      });
+    } else {
+      print(response.file);
+    }
+  }
+
+  Future uploadFile() async {
+    int i = 1;
+
+    for (var img in _image) {
+      setState(() {
+        val = i / _image.length;
+      });
+      ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('images/${Path.basename(img.path)}');
+      await ref!.putFile(img).whenComplete(() async {
+        await ref!.getDownloadURL().then((value) {
+          FirebaseFirestore.instance
+              .collection('profile')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .update({
+            'imageUrl': FieldValue.arrayUnion([value])
+          });
+          // imgRef!.add({'url': value});
+          i++;
+        });
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    imgRef = FirebaseFirestore.instance.collection('imageURLs');
   }
 }
