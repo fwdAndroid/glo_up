@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:glo_up/Screens/authphone/auth.dart';
+import 'package:glo_up/database/auth.dart';
 import 'package:glo_up/Screens/authphone/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:social_login_buttons/social_login_buttons.dart';

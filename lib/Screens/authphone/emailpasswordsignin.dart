@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:glo_up/BottomNavigatonBar/bottomnavigation.dart';
-import 'package:glo_up/Screens/authphone/auth.dart';
+import 'package:glo_up/database/auth.dart';
 import 'package:glo_up/Screens/authphone/emailpasswordsignup.dart';
 import 'package:glo_up/Screens/authphone/login.dart';
 import 'package:glo_up/Screens/authphone/utils.dart';

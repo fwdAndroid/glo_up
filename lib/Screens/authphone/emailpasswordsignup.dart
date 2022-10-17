@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:glo_up/Screens/authphone/auth.dart';
+import 'package:glo_up/database/auth.dart';
 import 'package:glo_up/Screens/authphone/login.dart';
 import '../../BottomNavigatonBar/Screens/Profile screens/profile.dart';
 
