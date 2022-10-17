@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:glo_up/Screens/Profile_Screen/personalphoto.dart';
 import 'package:glo_up/Screens/groupbutton/brand_select_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -220,7 +221,7 @@ class _Best_PhotoState extends State<Best_Photo> {
                         uploadFile().whenComplete(() => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (builder) => BrandSelectScreen())));
+                                builder: (builder) => PersonalPhoto())));
                       }
                     },
                     child: Text(
