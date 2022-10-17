@@ -360,6 +360,9 @@ class _ProfileState extends State<Profile> {
       _isLoading = true;
     });
     String rse = await FirestoreMethods().uploadPosts(
+        photoUrl: "",
+        imageUrl: [],
+        likes: [],
         email: _emailController.text,
         firstName: _firstController.text,
         lastName: _lastController.text,

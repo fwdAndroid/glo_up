@@ -1,40 +1,42 @@
-import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:glo_up/database/storagemethods.dart';
 import 'package:glo_up/models/profilemodel.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:uuid/uuid.dart';
 
 class FirestoreMethods {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   //Upload PostImage to Firestore
-  Future<String> uploadPosts(
-      {required String email,
-      required String firstName,
-      required String uid,
-      required String lastName,
-      required String occupy,
-      required String age,
-      required String phone,
-      required String date}) async {
+  Future<String> uploadPosts({
+    required String email,
+    required String firstName,
+    required String uid,
+    required String lastName,
+    required String occupy,
+    required String age,
+    required String phone,
+    required String date,
+    required List<String> likes,
+   required List<String> imageUrl,
+   required String photoUrl,
+  }) async {
     String res = "Some Error";
     try {
       ProfileModel profileModel = ProfileModel(
-          FirstName: firstName,
+          profilePhotoURL: photoUrl,
+          firstName: firstName,
           uid: uid,
-          LastName: lastName,
+          imageUrl: imageUrl,
+          likes: likes,
+          lastName: lastName,
           email: email,
-          Date: date,
+          date: date,
           phone: phone,
           occupy: occupy,
           age: age);
 
       ///Uploading Post To Firebase
       _firebaseFirestore
-          .collection('userss')
+          .collection('profile')
           .doc(uid)
           .set(profileModel.toJson());
       res = 'Sucessfully Uploaded in Firebase';
