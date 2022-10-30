@@ -14,7 +14,10 @@ import 'package:glo_up/utils/chats/screens/chat_page.dart';
 const webScreenSize = 600;
 
 List<Widget> homeScreenItems = [
-  Home_Screen(),
+  Home_Screen(
+    friendID: '',
+    avatar: '',
+  ),
   Fiber_dev(),
   ChatPage(),
   Heart(),
